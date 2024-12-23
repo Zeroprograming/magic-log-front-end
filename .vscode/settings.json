@@ -1,0 +1,5 @@
+{
+  "spellright.language": ["en", "es"],
+  "spellright.documentTypes": ["markdown", "latex", "plaintext"],
+  "cSpell.words": ["hookform", "shadcn", "tailwindcss"]
+}
