@@ -4,14 +4,14 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { axiosClient, setupAxiosInterceptors } from '@/api/axios_client';
+import { IUserProfile } from '@/schemas/auth/auth';
 import { chargeUser, updateUser } from '@/store';
 import { getCurrentUser } from '@/store/selectors/user';
-import { User } from '@/utils/constants';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: User;
-  login: (userData: User) => void;
+  user: IUserProfile;
+  login: (userData: IUserProfile) => void;
   logout: () => void;
   isLoading: boolean; // Nuevo estado
 }
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Obtener el token de localStorage o cookies
     const token =
-      localStorage.getItem('accessToken') ?? getCookie('accessToken');
+      localStorage.getItem('access_token') ?? getCookie('access_token');
 
     // Verificar si la ruta actual es '/auth/sign-in' o si no hay token
     if (!token || router.pathname === '/auth/sign-in') {
@@ -39,14 +39,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Solo hacer la petición si hay un token y NO estás en '/auth/sign-in'
     axiosClient
-      .get('/actual')
+      .get('/v1/auth/profile')
       .then((response) => {
         dispatch(chargeUser({ user: response.data }));
         setIsAuthenticated(true);
       })
       .catch(() => {
         // Si la petición falla, eliminar el token y marcar como no autenticado
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem('access_token');
         setIsAuthenticated(false);
       })
       .finally(() => {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
   }, [router.pathname]); // Dependencia en router.pathname para que se ejecute al cambiar de ruta
 
-  const login = (userData: User) => {
+  const login = (userData: IUserProfile) => {
     dispatch(
       chargeUser({
         user: userData,
@@ -64,15 +64,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
-    dispatch(
-      updateUser({
-        user: {},
-      }),
-    );
-    setIsAuthenticated(false);
-    void router.push('/auth/sign-in');
+  const logout = async () => {
+    try {
+      await axiosClient.post('/v1/auth/logout');
+      localStorage.removeItem('access_token');
+      dispatch(updateUser({ user: {} }));
+      setIsAuthenticated(false);
+      void router.push('/auth/sign-in');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   useEffect(() => {

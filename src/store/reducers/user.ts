@@ -1,19 +1,24 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createReducer } from '@reduxjs/toolkit';
 
+import { IUserProfile } from '@/schemas/auth/auth';
 import { chargeUser, logoutUser } from '@/store';
-import { User } from '@/utils/constants';
 interface UserState {
   isLoggedIn: boolean;
-  user: User;
+  user: IUserProfile;
 }
 
-const emptyUser: User = {
+const emptyUser: IUserProfile = {
   id: 0,
   email: '',
-  name: '',
-  createdAt: '',
-  updatedAt: '',
+  role: {
+    id: 0,
+    name: '',
+  },
+  cart: {
+    id: 0,
+    items: [],
+  },
 };
 
 export const initialState: UserState = {

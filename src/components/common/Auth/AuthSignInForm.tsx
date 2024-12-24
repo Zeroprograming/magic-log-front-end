@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -59,7 +60,15 @@ export default function AuthSignInForm() {
           const usuarioActual = await getUsuarioActual.refetch();
 
           // Llama al método login, pasando los datos del usuario actual.
-          login(usuarioActual.data);
+          if (usuarioActual.data) {
+            login(usuarioActual.data);
+          } else {
+            toast({
+              title: 'Error al obtener datos del usuario',
+              description:
+                'No se pudieron cargar los datos del usuario actual.',
+            });
+          }
 
           // Redirige al usuario después de iniciar sesión.
           void router.push('/');
@@ -148,6 +157,14 @@ export default function AuthSignInForm() {
                   </div>
                 </FormControl>
                 <FormMessage />
+                <div className="flex flex-row justify-end w-full text-xs">
+                  <Link
+                    href="/auth/register"
+                    className="text-greyScale-text-subtitle"
+                  >
+                    ¿No tienes una cuenta? Regístrate
+                  </Link>
+                </div>
               </FormItem>
             )}
           />

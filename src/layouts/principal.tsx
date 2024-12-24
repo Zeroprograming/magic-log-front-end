@@ -1,13 +1,23 @@
 'use client';
 
-import { ChevronDown, ChevronUp, LogOut } from 'lucide-react';
+import { AxiosError } from 'axios';
+import {
+  ChevronDown,
+  ChevronUp,
+  LogOut,
+  ShoppingCart,
+  Store,
+  UserRoundCog,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAuth } from '@/components/common/Auth/AuthProvider';
+import { ModalCartView } from '@/components/common/Cart/ModalCartView';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -19,6 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/components/ui/use-toast';
+import { useLogoutMutation } from '@/services/v1/auth';
 import { getCurrentUser } from '@/store/selectors/user';
 
 interface Props {
@@ -36,6 +47,10 @@ const MainContent = ({ children }: Props) => {
 
 function PrincipalLayout({ children, className }: Props) {
   const [isOpenViewUser, setIsOpenViewUser] = useState(false);
+  const [openCart, setOpenCart] = useState(false);
+  const logoffMutation = useLogoutMutation();
+
+  const router = useRouter();
 
   const user = useSelector(getCurrentUser);
 
@@ -65,7 +80,7 @@ function PrincipalLayout({ children, className }: Props) {
               <DropdownMenuTrigger>
                 <div className="flex items-center gap-2">
                   <Avatar>
-                    <AvatarFallback>{`${user.name.charAt(0)}`}</AvatarFallback>
+                    <AvatarFallback>{`${user.email.charAt(0)}`}</AvatarFallback>
                   </Avatar>
                   {isOpenViewUser ? (
                     <ChevronUp className="h-4 w-4" />
@@ -79,12 +94,12 @@ function PrincipalLayout({ children, className }: Props) {
                   <div className="flex flex-row gap-2 items-center">
                     <Avatar>
                       <AvatarFallback>
-                        {`${user.name.charAt(0)}`}
+                        {`${user.email.charAt(0)}`}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col w-full gap-1">
-                      <span className="text-sm font-semibold capitalize">
-                        {user.name}
+                      <span className="text-sm font-semibold">
+                        {user.email}
                       </span>
                       <span className="text-xs text-greyScale-text-caption">
                         {user.email}
@@ -97,10 +112,70 @@ function PrincipalLayout({ children, className }: Props) {
                   <DropdownMenuItem
                     className="flex w-full"
                     onClick={() => {
-                      logout();
-                      toast({
-                        title: 'Sesión cerrada',
-                        description: 'La sesión ha sido cerrada correctamente',
+                      setOpenCart(true);
+                    }}
+                  >
+                    <div className="flex flex-row w-full gap-2 justify-center items-center">
+                      <ShoppingCart className="size-5" />
+                      <span className="w-full px-1">Carrito</span>
+                    </div>
+                  </DropdownMenuItem>
+                  {user.role?.id === 1 ? (
+                    <DropdownMenuItem
+                      className="flex w-full"
+                      onClick={() => {
+                        void router.push('/admin-panel');
+                      }}
+                    >
+                      <div className="flex flex-row w-full gap-2 justify-center items-center">
+                        <UserRoundCog className="size-5" />
+                        <span className="w-full px-1">Panel Administrador</span>
+                      </div>
+                    </DropdownMenuItem>
+                  ) : null}
+                  {user.role?.id === 2 || user.role?.id === 1 ? (
+                    <DropdownMenuItem
+                      className="flex w-full"
+                      onClick={() => {
+                        void router.push('/seller');
+                      }}
+                    >
+                      <div className="flex flex-row w-full gap-2 justify-center items-center">
+                        <Store className="size-5" />
+                        <span className="w-full px-1">Panel Vendedor</span>
+                      </div>
+                    </DropdownMenuItem>
+                  ) : null}
+                  <Separator className="my-1.5" />
+                  <DropdownMenuItem
+                    className="flex w-full"
+                    onClick={() => {
+                      logoffMutation.mutate(undefined, {
+                        onSuccess: () => {
+                          logout();
+                        },
+                        onError(error) {
+                          const axiosError = error as AxiosError;
+                          switch (axiosError.response?.status) {
+                            case 401:
+                              toast({
+                                title: 'Error - 401',
+                                description:
+                                  'No se pudo cerrar sesión de forma segura',
+                              });
+                              logout();
+                              break;
+
+                            default:
+                              toast({
+                                title: 'Error - 500',
+                                description:
+                                  'No se pudo cerrar sesión de forma segura',
+                              });
+                              logout();
+                              break;
+                          }
+                        },
                       });
                     }}
                   >
@@ -118,7 +193,13 @@ function PrincipalLayout({ children, className }: Props) {
 
       {/* Contenido principal de la página */}
       <div className="flex items-center justify-center flex-col gap-4 w-full min-h-[80vh] bg-greyScale-background">
-        <MainContent>{children}</MainContent>
+        <MainContent>
+          <>
+            {children}
+
+            <ModalCartView open={openCart} setOpen={setOpenCart} />
+          </>
+        </MainContent>
       </div>
     </div>
   );

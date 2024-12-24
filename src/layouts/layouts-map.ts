@@ -5,6 +5,7 @@ const layoutsMap: Record<string, React.FC<{ children: JSX.Element }>> = {
   '/': PrincipalLayout,
   '/_error': NothingLayout,
   '/auth/sign-in': NothingLayout,
+  '/auth/register': NothingLayout,
   '/users/user-management': PrincipalLayout,
 };
 

@@ -21,7 +21,7 @@ axiosClient.interceptors.request.use(
     config: InternalAxiosRequestConfig<any>,
   ): InternalAxiosRequestConfig<any> => {
     const token =
-      localStorage.getItem('accessToken') ?? getCookie('accessToken');
+      localStorage.getItem('access_token') ?? getCookie('access_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
