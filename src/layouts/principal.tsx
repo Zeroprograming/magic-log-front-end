@@ -89,7 +89,7 @@ function PrincipalLayout({ children, className }: Props) {
                   )}
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="mr-48">
+              <DropdownMenuContent className="md:mr-4 lg:mr-6 xl:mr-20  2xl:mr-48">
                 <DropdownMenuLabel className="flex flex-col gap-2">
                   <div className="flex flex-row gap-2 items-center">
                     <Avatar>

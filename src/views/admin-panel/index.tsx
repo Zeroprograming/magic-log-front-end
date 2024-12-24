@@ -171,9 +171,9 @@ export default function AdminPanelView() {
 
   return (
     <>
-      <div className="flex flex-row gap-3 justify-center items-center w-screen max-w-screen-xl">
+      <div className="flex flex-col lg:flex-row gap-3 justify-center items-center w-screen max-w-screen-xl">
         {/* Filtros */}
-        <div className="w-1/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh]">
+        <div className="w-full lg:w-1/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh]">
           <h2 className="text-xl font-semibold">Filtros de Productos</h2>
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -218,7 +218,7 @@ export default function AdminPanelView() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
                             align="center"
-                            className="lg:min-w-[28rem] xl:min-w-[16.5rem] "
+                            className="min-w-[23rem] md:min-w-[45rem] lg:min-w-[10rem] xl:min-w-[16.5rem] "
                           >
                             {isLoadingUsersQuery ? (
                               <div className="flex justify-center items-center py-4">
@@ -367,7 +367,7 @@ export default function AdminPanelView() {
         </div>
 
         {/* Lista de productos */}
-        <div className="w-3/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh] flex flex-col justify-between">
+        <div className="w-full md:w-3/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh] flex flex-col justify-between">
           {/* Filtro de nombre dentro de la lista de productos */}
           <div className="mb-6 pb-4 flex flex-col gap-4">
             <h2 className="w-full text-start text-xl font-semibold">

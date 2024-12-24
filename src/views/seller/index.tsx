@@ -62,6 +62,7 @@ export default function SellerView() {
   const [currentProduct, setCurrentProduct] = useState<ProductResponse | null>(
     null,
   );
+  const [products, setProducts] = useState<ProductResponse[]>([]);
 
   const [filters, setFilters] = useState({
     name: { value: '' as string | null },
@@ -88,6 +89,13 @@ export default function SellerView() {
     limit: 10,
     page,
   });
+
+  React.useEffect(() => {
+    if (dataProducts !== undefined) {
+      // Si dataProducts existe, incluso si está vacío (204)
+      setProducts(dataProducts.products || []);
+    }
+  }, [dataProducts]);
 
   // Cálculos de paginación
   const totalPages = dataProducts?.metadata?.last_page ?? 1;
@@ -136,6 +144,8 @@ export default function SellerView() {
           title: 'Producto eliminado',
           description: 'El producto ha sido eliminado correctamente',
         });
+
+        void refetch();
       },
       onError: (error: any) => {
         switch (error.response?.status) {
@@ -154,15 +164,13 @@ export default function SellerView() {
         }
       },
     });
-
-    await refetch();
   };
 
   return (
     <>
-      <div className="flex flex-row gap-3 justify-center items-center w-screen max-w-screen-xl">
+      <div className="flex flex-col md:flex-row gap-3 justify-center items-center w-screen max-w-screen-xl">
         {/* Filtros */}
-        <div className="w-1/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh]">
+        <div className="w-full md:w-1/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh]">
           <h2 className="text-xl font-semibold">Filtros de Productos</h2>
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -291,7 +299,7 @@ export default function SellerView() {
         </div>
 
         {/* Lista de productos */}
-        <div className="w-3/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh] flex flex-col justify-between">
+        <div className="w-full md:w-3/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh] flex flex-col justify-between">
           {/* Filtro de nombre dentro de la lista de productos */}
           <div className="mb-6 pb-4 flex flex-col gap-4">
             <h2 className="w-full text-start text-xl font-semibold">
@@ -343,9 +351,9 @@ export default function SellerView() {
 
             {!isLoading &&
               !isError &&
-              dataProducts?.products &&
-              dataProducts.products.length > 0 &&
-              dataProducts.products.map((product) => (
+              products &&
+              products.length > 0 &&
+              products.map((product) => (
                 <ProductCardSeller
                   key={product.id}
                   product={product}

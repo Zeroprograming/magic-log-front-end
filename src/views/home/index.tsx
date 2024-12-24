@@ -127,9 +127,9 @@ export default function HomeView() {
   };
 
   return (
-    <div className="flex flex-row gap-3 justify-center items-center w-screen max-w-screen-xl">
+    <div className="flex flex-col md:flex-row gap-3 justify-center items-center w-screen max-w-screen-xl">
       {/* Filtros */}
-      <div className="w-1/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh]">
+      <div className="w-full md:w-1/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh]">
         <h2 className="text-xl font-semibold">Filtros de Productos</h2>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -223,7 +223,7 @@ export default function HomeView() {
       </div>
 
       {/* Lista de productos */}
-      <div className="w-3/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh] flex flex-col justify-between">
+      <div className="w-full md:w-3/4 p-6 mb-10 bg-white rounded-lg h-screen max-h-[80vh] flex flex-col justify-between">
         {/* Filtro de nombre dentro de la lista de productos */}
         <div className="mb-6 pb-4">
           <h2 className="w-full text-end text-xl font-semibold">Productos</h2>
